@@ -1,0 +1,16 @@
+{
+  "z": 5,
+  "w": 512,
+  "h": 512,
+  "case_id": "synthetic_demo",
+  "label": "合成演示病例（非真实影像）",
+  "structures": [
+    {
+      "id": "lesion",
+      "name_en": "Synthetic lesion",
+      "name_zh": "合成病灶（演示）",
+      "color": "#FF5A5A"
+    }
+  ],
+  "cover_k": 2
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>影像解剖图谱 · 打样</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="stage">
+    <div id="viewport">
+      <img id="slice" alt="" draggable="false">
+      <svg id="overlay" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none"></svg>
+      <div id="labels"></div>
+    </div>
+  </div>
+  <div id="tag"></div>
+  <button id="btn-labels" aria-label="显示/隐藏结构轮廓与名称标注">标注</button>
+  <button id="btn-info" aria-label="病例信息">i</button>
+  <div id="info-backdrop" class="hidden">
+    <div id="info-sheet" role="dialog" aria-modal="true" aria-label="病例信息">
+      <div id="info-head">
+        <span id="info-head-title">病例信息</span>
+        <button id="btn-info-close" aria-label="关闭">✕</button>
+      </div>
+      <div id="info-body"></div>
+    </div>
+  </div>
+  <div id="hud">
+    <button id="btn-prev" aria-label="上一层">▲</button>
+    <input id="slider" type="range" min="0" max="0" value="0" step="1">
+    <button id="btn-next" aria-label="下一层">▼</button>
+    <span id="label">—</span>
+  </div>
+  <script src="person-store.js"></script>
+  <script src="viewer.js"></script>
+</body>
+</html>
