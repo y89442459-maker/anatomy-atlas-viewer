@@ -1,0 +1,116 @@
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; background: #000; overflow: hidden;
+  font-family: system-ui, -apple-system, "PingFang SC", sans-serif; }
+
+/* 主舞台：全屏、禁掉浏览器默认触摸滚动（否则翻层手势会被页面滚动吃掉） */
+#stage { position: fixed; inset: 0; touch-action: none; cursor: grab; }
+
+/* 视口：居中放置图像，缩放围绕中心 */
+#viewport { position: absolute; left: 50%; top: 50%;
+  transform: translate(-50%, -50%) scale(1); transform-origin: center; }
+
+#viewport img { display: block; width: min(100vw, 100vh); height: auto;
+  image-rendering: auto; user-select: none; -webkit-user-drag: none; }
+
+/* 轮廓叠加层：与图片同尺寸 */
+#overlay { position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; }
+
+/* 底部控制条 */
+#hud { position: fixed; left: 0; right: 0; bottom: 0;
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+  background: linear-gradient(transparent, rgba(0,0,0,.75) 40%);
+  color: #ddd; font-size: 14px; }
+#hud button { width: 44px; height: 44px; border: none; border-radius: 8px;
+  background: rgba(255,255,255,.12); color: #fff; font-size: 18px; }
+#hud input[type=range] { flex: 1; accent-color: #4ea1ff; }
+#label { min-width: 84px; text-align: right; font-variant-numeric: tabular-nums; }
+
+/* 点选结构的名称标签（顶部，避开手指遮挡） */
+#tag { position: fixed; left: 50%; top: 64px; transform: translateX(-50%);
+  background: rgba(18,28,48,.92); color: #fff; padding: 10px 20px;
+  border-radius: 10px; font-size: 17px; letter-spacing: .5px;
+  border: 1px solid rgba(120,180,255,.35); display: none; z-index: 10;
+  white-space: nowrap; }
+
+/* 结构名标注层：与图像同尺寸，随缩放一起变换；文字块不拦截触摸 */
+#labels { position: absolute; inset: 0; overflow: hidden;
+  pointer-events: none; z-index: 3; }
+.leader-label { position: absolute; display: flex; align-items: center; gap: 5px;
+  max-width: 34%; padding: 2px 6px; border-radius: 5px;
+  background: rgba(8,12,20,.82); color: #e8eef8; font-size: 11px;
+  line-height: 1.35; border-left: 2px solid #fff; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
+  box-shadow: 0 2px 8px rgba(0,0,0,.35); }
+.leader-label .dot { width: 6px; height: 6px; border-radius: 50%; flex: none; }
+.leader-label.sel { background: rgba(20,40,70,.95);
+  outline: 1px solid rgba(120,180,255,.6); }
+
+/* 标注总开关（左上角，避开安全区）：轮廓和名称一起显示/隐藏 */
+#btn-labels { position: fixed; left: 14px;
+  top: calc(14px + env(safe-area-inset-top)); height: 36px; padding: 0 13px;
+  border-radius: 18px; border: 1px solid rgba(140,180,230,.35);
+  background: rgba(18,28,48,.86); color: #9fb4d0; font-size: 12.5px;
+  z-index: 15; cursor: pointer; }
+#btn-labels.active { background: #2563eb; border-color: #2563eb; color: #fff; }
+
+/* 病例信息按钮（右上角，避开安全区） */
+#btn-info { position: fixed; right: 14px;
+  top: calc(14px + env(safe-area-inset-top)); width: 40px; height: 40px;
+  border-radius: 50%; border: 1px solid rgba(140,180,230,.35);
+  background: rgba(18,28,48,.86); color: #cfe2ff; font-size: 18px;
+  font-style: italic; font-family: Georgia, serif; z-index: 15;
+  cursor: pointer; }
+
+/* 信息面板：底部抽屉（手机）/ 居中弹窗（桌面） */
+#info-backdrop { position: fixed; inset: 0; z-index: 30;
+  background: rgba(0,0,0,.55); display: flex; align-items: flex-end;
+  justify-content: center; }
+#info-backdrop.hidden { display: none; }
+#info-sheet { width: 100%; max-width: 640px; max-height: 82vh;
+  display: flex; flex-direction: column; background: #0f1622;
+  color: #e8e8e8; border: 1px solid #22304a;
+  border-radius: 18px 18px 0 0; box-shadow: 0 -10px 40px rgba(0,0,0,.5); }
+#info-head { display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; border-bottom: 1px solid #1c2738;
+  font-size: 16px; font-weight: 600; color: #dfe8f5; }
+#btn-info-close { width: 34px; height: 34px; border: none; border-radius: 50%;
+  background: rgba(255,255,255,.08); color: #aab8cc; font-size: 16px; }
+#info-body { overflow-y: auto; -webkit-overflow-scrolling: touch;
+  padding: 16px 18px calc(24px + env(safe-area-inset-bottom));
+  font-size: 14px; line-height: 1.7; }
+.info-sec h3 { font-size: 15px; color: #cdd6e4; margin: 18px 0 8px; }
+.info-sec h3:first-child { margin-top: 0; }
+.info-src { font-size: 11px; color: #7a8699; font-weight: 400; margin-left: 6px; }
+.info-note { font-size: 12px; color: #8a98ad; background: #0b1220;
+  border: 1px solid #1b2434; border-radius: 10px; padding: 10px 12px; margin: 8px 0; }
+.info-group h4 { font-size: 13px; color: #9aa7bb; margin: 14px 0 6px; }
+.info-dl { display: grid; grid-template-columns: 108px 1fr; gap: 6px 10px;
+  font-size: 13.5px; }
+.info-dl dt { color: #7f8da3; white-space: nowrap; }
+.info-dl dd { color: #dbe3ef; }
+.know-title { font-size: 16px; font-weight: 600; color: #dfe8f5; margin: 4px 0 10px; }
+.know-sec { margin: 10px 0; }
+.know-sec strong { color: #9fc0ea; font-weight: 600; }
+.disclaimer { margin-top: 16px; padding-top: 10px; font-size: 12px;
+  color: #7a8699; border-top: 1px dashed #22304a; }
+
+/* 延伸阅读（病例信息面板底部，默认折叠） */
+.refs { margin: 8px 0 4px; border: 1px solid #1c2738; border-radius: 10px;
+  background: #0b1220; padding: 8px 12px; }
+.refs summary { cursor: pointer; color: #9fc0ea; font-size: 13px; padding: 2px 0; }
+.ref-item { padding: 10px 0 8px; border-top: 1px solid #16202f; }
+.ref-item:first-of-type { border-top: none; }
+.ref-head { display: flex; gap: 6px; align-items: flex-start; }
+.ref-badge { flex: none; font-size: 10.5px; color: #9fc0ea; background: #11213a;
+  border: 1px solid #2a4a72; border-radius: 4px; padding: 1px 5px; }
+.ref-head a { color: #dbe7f7; text-decoration: none; font-size: 13px; line-height: 1.45; }
+.ref-head a:hover { text-decoration: underline; }
+.ref-meta { color: #7a8699; font-size: 11.5px; margin: 3px 0; }
+.ref-takeaway { color: #b9c6d8; font-size: 12.5px; line-height: 1.55; }
+.refs-note { color: #5d6b80; font-size: 11px; margin-top: 8px; line-height: 1.5; }
+@media (min-width: 700px) {
+  #info-backdrop { align-items: center; }
+  #info-sheet { border-radius: 16px; max-height: 80vh; }
+}
