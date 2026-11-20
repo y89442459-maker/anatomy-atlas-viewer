@@ -2,6 +2,8 @@
 
 个人自用的影像解剖 / 病例查看器前端，从项目中抽出的可运行演示版。手机优先，纯 HTML/CSS/JS，无框架。
 
+关键词：影像解剖图谱、医学影像查看器、CT/MRI 切片、DICOM、SVG 标注、ROI 测量、PWA。
+
 <img src="docs/demo.png" width="360" alt="合成演示病例">
 
 ## 功能
